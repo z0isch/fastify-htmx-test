@@ -27,13 +27,11 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "jsx": "react-jsx"
+  },
+  "ts-node": {
+    "swc": true
   },
   "exclude": [
     "node_modules"
-  ],
-  "include": [
-    "./src/**/*.ts",
-    "./src/**/*.tsx"
   ]
 }
