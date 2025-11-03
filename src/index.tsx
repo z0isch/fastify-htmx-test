@@ -1,6 +1,5 @@
 import fastify from "fastify";
-import { Transform } from "node:stream";
-import { renderToPipeableStream } from "react-dom/server";
+import { renderToStaticMarkup } from "react-dom/server";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
 
@@ -10,7 +9,7 @@ const app = fastify({
   logger: true,
 }).withTypeProvider<TypeBoxTypeProvider>();
 
-const Layout = ({ children }: { children: React.ReactNode }) => (
+const Layout = ({ children }: { children: React.JSX.Element }) => (
   <html lang="en">
     <head>
       <meta charSet="utf-8" />
@@ -26,28 +25,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
   </html>
 );
 
-function render(body: React.ReactNode): Transform {
-  let isFirstChunk = true;
-  const prepend = new Transform({
-    transform(chunk, _encoding, callback) {
-      if (isFirstChunk) {
-        isFirstChunk = false;
-        this.push("<!DOCTYPE html>");
-      }
-      callback(null, chunk);
-    },
-  });
-  return renderToPipeableStream(<Layout>{body}</Layout>).pipe(prepend);
-}
-
-function renderFragment(fragment: React.ReactNode): Transform {
-  return renderToPipeableStream(fragment).pipe(
-    new Transform({
-      transform(chunk, _encoding, callback) {
-        callback(null, chunk);
-      },
-    })
-  );
+function renderFullPage(body: React.JSX.Element): string {
+  return "<!DOCTYPE html>" + renderToStaticMarkup(<Layout>{body}</Layout>);
 }
 
 const ServerTime = () => {
@@ -64,11 +43,11 @@ app.get(
     },
   },
   (req, reply) => {
-    reply.type("text/html");
+    reply.type("text/html; charset=utf-8");
     reply.send(
       req.headers["hx-request"]
-        ? renderFragment(<ServerTime />)
-        : render(
+        ? renderToStaticMarkup(<ServerTime />)
+        : renderFullPage(
             <>
               Server time:{" "}
               <span hx-get="/" hx-trigger="every 1s">
