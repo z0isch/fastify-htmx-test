@@ -12,12 +12,9 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@swc/core": "^1.14.0",
-    "@swc/helpers": "^0.5.17",
     "@types/node": "^24.9.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "regenerator-runtime": "^0.14.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
